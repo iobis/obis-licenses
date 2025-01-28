@@ -16,14 +16,6 @@ format:
       gutter-width: 1.5rem
 ---
 
-```{r setup, echo=FALSE}
-required_packages <- c("dplyr", "ggplot2", "robis", "scales", "knitr", "stringr", "tidyr")
-missing_packages <- required_packages[!(required_packages %in% installed.packages()[, "Package"])]
-if (length(missing_packages)) {
-  install.packages(missing_packages)
-}
-```
-
 # Dataset metadata
 
 ```{r message=FALSE}
