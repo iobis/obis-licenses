@@ -1,0 +1,30 @@
+name: publish
+
+on:
+  schedule:
+    - cron: "45 0 * * 0"
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: latest
+      - name: Install dependencies
+        run: |
+          Rscript -e "if (!requireNamespace('quarto')) install.packages('quarto')"
+      - name: Render Quarto site
+        run: quarto render
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site

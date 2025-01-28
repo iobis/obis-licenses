@@ -1,0 +1,6 @@
+.DS_Store
+index_cache
+index_files
+index.html
+*.Rproj
+.Rproj.user
