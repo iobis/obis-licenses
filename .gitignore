@@ -4,3 +4,5 @@ index_files
 index.html
 *.Rproj
 .Rproj.user
+_site
+/.quarto/
