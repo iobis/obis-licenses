@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Install libs
-        run: sudo apt-get update && sudo apt-get install gdal-bin proj-bin libgdal-dev libproj-dev libudunits2-dev
+        run: sudo apt-get update && sudo apt-get install gdal-bin proj-bin libgdal-dev libproj-dev libudunits2-dev libfontconfig1-dev
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Set up Quarto
