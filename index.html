@@ -130,8 +130,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<p>This is an overview of data licenses applied to OBIS datasets. In particular, it shows the distribution of public domain (<a href="https://creativecommons.org/public-domain/cc0/">CC0</a>) and open licenses (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA</a>), versus more restrictive licenses (such as <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC</a>) across datasets and records. Creative Commons licenses other than CC0, CC BY, and CC BY-SA, are considered non-free because they impose restrictions on commercial and derivative use. The former licenses however, are conformant with the Open Knowledge Foundation’s <a href="https://opendefinition.org/">Open Definition</a>.</p>
+<p>Nature Scientific Data <a href="https://www.nature.com/sdata/policies/repositories">recommends the use of CC0 or CC BY licenses</a>. NCEI <a href="https://www.ncei.noaa.gov/archive">encourages the use of CC0 or CC BY</a> for data produced by non-Federal entities.</p>
+<p>Besides Creative Commons licenses, OBIS datasets also use other licenses such as:</p>
+<ul>
+<li><a href="https://open.canada.ca/en/open-government-licence-canada">Open Government Licence - Canada (OGL-C)</a></li>
+<li><a href="https://opendatacommons.org/licenses/by/1-0/">Open Data Commons Attribution License (ODC-By)</a></li>
+<li><a href="https://www.ices.dk/data/guidelines-and-policy/pages/ices-data-policy.aspx">ICES Data Policy</a></li>
+</ul>
+<p>For the purpose of this analysis these licenses will be considered open, but the ICES Data Policy requires closer investigation as it mentions some exceptions on the use of CC BY.</p>
 <section id="dataset-metadata" class="level1">
 <h1>Dataset metadata</h1>
+<p>Dataset metadata including licenses can be obtained from the OBIS API using the robis R package. Because the license field is free text, some cleanup is required.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
@@ -151,7 +161,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.background =</span> <span class="fu">element_blank</span>(),</span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"#f5f5f5"</span>, <span class="at">colour =</span> <span class="cn">NA</span>),</span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.background =</span> <span class="fu">element_blank</span>()</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>categories <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Public domain"</span>, <span class="st">"Open"</span>, <span class="st">"Non-free"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>full_datasets <span class="ot">&lt;-</span> <span class="fu">dataset</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -182,15 +194,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(</span>
 <span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">intellectualrights =</span> <span class="fu">gsub</span>(<span class="st">"</span><span class="sc">\\\n</span><span class="st">"</span>, <span class="st">" "</span>, intellectualrights),    </span>
 <span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">category =</span> <span class="fu">case_when</span>(</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>      license <span class="sc">==</span> <span class="st">"CC0"</span> <span class="sc">~</span> <span class="st">"CC0"</span>,</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>      license <span class="sc">==</span> <span class="st">"CC BY"</span> <span class="sc">~</span> <span class="st">"CC BY"</span>,</span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Other"</span></span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>      license <span class="sc">==</span> <span class="st">"CC0"</span> <span class="sc">~</span> <span class="st">"Public domain"</span>,</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>      license <span class="sc">==</span> <span class="st">"CC BY"</span> <span class="sc">~</span> <span class="st">"Open"</span>,</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>      license <span class="sc">==</span> <span class="st">"CC BY-SA"</span> <span class="sc">~</span> <span class="st">"Open"</span>,</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>      license <span class="sc">==</span> <span class="st">"Open Data Commons Attribution"</span> <span class="sc">~</span> <span class="st">"Open"</span>,</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>      license <span class="sc">==</span> <span class="st">"Open Government Licence - Canada"</span> <span class="sc">~</span> <span class="st">"Open"</span>,</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>      license <span class="sc">==</span> <span class="st">"ICES Data Policy"</span> <span class="sc">~</span> <span class="st">"Open"</span>,</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Non-free"</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="records-and-datasets-by-license" class="level1">
 <h1>Records and datasets by license</h1>
+<p>First create a table of all licenses as they appear in the metadata, along with the clean name, and statistics on records and datasets.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>licenses <span class="ot">&lt;-</span> datasets <span class="sc">%&gt;%</span> </span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(license, intellectualrights, category) <span class="sc">%&gt;%</span></span>
@@ -201,9 +218,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
-<col style="width: 12%">
-<col style="width: 78%">
-<col style="width: 3%">
+<col style="width: 11%">
+<col style="width: 76%">
+<col style="width: 5%">
 <col style="width: 3%">
 <col style="width: 3%">
 </colgroup>
@@ -220,70 +237,70 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="odd">
 <td style="text-align: left;">CC BY</td>
 <td style="text-align: left;">This work is licensed under a Creative Commons Attribution (CC-BY) 4.0 License</td>
-<td style="text-align: left;">CC BY</td>
-<td style="text-align: right;">2253</td>
-<td style="text-align: right;">82387339</td>
+<td style="text-align: left;">Open</td>
+<td style="text-align: right;">2254</td>
+<td style="text-align: right;">82388194</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">CC BY-NC</td>
 <td style="text-align: left;">This work is licensed under a Creative Commons Attribution Non Commercial (CC-BY-NC) 4.0 License</td>
-<td style="text-align: left;">Other</td>
+<td style="text-align: left;">Non-free</td>
 <td style="text-align: right;">1693</td>
 <td style="text-align: right;">18448603</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">CC0</td>
 <td style="text-align: left;">To the extent possible under law, the publisher has waived all rights to these data and has dedicated them to the Public Domain (CC0 1.0)</td>
-<td style="text-align: left;">CC0</td>
+<td style="text-align: left;">Public domain</td>
 <td style="text-align: right;">632</td>
-<td style="text-align: right;">18419750</td>
+<td style="text-align: right;">18418580</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">CC BY</td>
 <td style="text-align: left;">This work is licensed under a Creative Commons Attribution (CC-BY) 4.0 License ICES Data Policy: https://www.ices.dk/data/guidelines-and-policy/Pages/ICES-data-policy.aspx</td>
-<td style="text-align: left;">CC BY</td>
+<td style="text-align: left;">Open</td>
 <td style="text-align: right;">14</td>
 <td style="text-align: right;">3782186</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">CC0</td>
 <td style="text-align: left;">To the extent possible under law, the publisher has waived all rights to these data and has dedicated them to the Public Domain (CC0 1.0)</td>
-<td style="text-align: left;">CC0</td>
+<td style="text-align: left;">Public domain</td>
 <td style="text-align: right;">30</td>
 <td style="text-align: right;">2632501</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">CC BY</td>
 <td style="text-align: left;">This work is licensed under a Creative Commons Attribution (CC-BY 4.0) License</td>
-<td style="text-align: left;">CC BY</td>
-<td style="text-align: right;">166</td>
-<td style="text-align: right;">2060668</td>
+<td style="text-align: left;">Open</td>
+<td style="text-align: right;">167</td>
+<td style="text-align: right;">2060859</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">ICES Data Policy</td>
 <td style="text-align: left;">Licence ICES Data Policy: http://www.ices.dk/marine-data/guidelines-and-policy/Pages/ICES-data-policy.aspx.</td>
-<td style="text-align: left;">Other</td>
+<td style="text-align: left;">Open</td>
 <td style="text-align: right;">3</td>
 <td style="text-align: right;">1139006</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Unknown</td>
 <td style="text-align: left;"></td>
-<td style="text-align: left;">Other</td>
+<td style="text-align: left;">Non-free</td>
 <td style="text-align: right;">22</td>
 <td style="text-align: right;">876511</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Open Government Licence - Canada</td>
 <td style="text-align: left;">rights: http://data.gc.ca/eng/open-government-licence-canada &amp; http://www.canadensys.net/norms rights holder: Her Majesty the Queen in right of Canada, as represented by the Minister of Fisheries and Oceans</td>
-<td style="text-align: left;">Other</td>
+<td style="text-align: left;">Open</td>
 <td style="text-align: right;">2</td>
 <td style="text-align: right;">812304</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">CC BY</td>
 <td style="text-align: left;">This work is licensed under a Creative Commons Attribution (CC-BY) 4.0 License ICES data policy: https://www.ices.dk/data/guidelines-and-policy/Pages/ICES-data-policy.aspx</td>
-<td style="text-align: left;">CC BY</td>
+<td style="text-align: left;">Open</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">727047</td>
 </tr>
@@ -293,6 +310,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <section id="number-of-records" class="level2">
 <h2 class="anchored" data-anchor-id="number-of-records">Number of records</h2>
+<p>Here we look at the usage of (cleaned) licenses in terms of number of records.</p>
 <div class="cell" data-fig.fullwidth="true">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>license_stats <span class="ot">&lt;-</span> licenses <span class="sc">%&gt;%</span> </span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(license, category) <span class="sc">%&gt;%</span> </span>
@@ -300,7 +318,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="sc">-</span>records) <span class="sc">%&gt;%</span> </span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">license =</span> <span class="fu">factor</span>(license, <span class="at">levels =</span> <span class="fu">rev</span>(<span class="fu">reorder</span>(license, records))),</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">category =</span> <span class="fu">factor</span>(category, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"CC0"</span>, <span class="st">"CC BY"</span>, <span class="st">"Other"</span>)),</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">category =</span> <span class="fu">factor</span>(category, <span class="at">levels =</span> categories),</span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">records_percentage =</span> records <span class="sc">/</span> <span class="fu">sum</span>(records) <span class="sc">*</span> <span class="dv">100</span>,</span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">datasets_percentage =</span> datasets <span class="sc">/</span> <span class="fu">sum</span>(datasets) <span class="sc">*</span> <span class="dv">100</span></span>
 <span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  )</span>
@@ -326,6 +344,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="number-of-datasets" class="level2">
 <h2 class="anchored" data-anchor-id="number-of-datasets">Number of datasets</h2>
+<p>Here we look at the usage of (cleaned) licenses in terms of number of datasets</p>
 <div class="cell" data-fig.fullwidth="true">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> license_stats) <span class="sc">+</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">y =</span> license, <span class="at">x =</span> datasets, <span class="at">fill =</span> category), <span class="at">stat =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
@@ -349,6 +368,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="records-and-datasets-by-node-and-license" class="level1">
 <h1>Records and datasets by node and license</h1>
+<p>In this section we look at license categories by node.</p>
 <section id="number-of-records-1" class="level2">
 <h2 class="anchored" data-anchor-id="number-of-records-1">Number of records</h2>
 <div class="cell" data-fig.fullwidth="true">
@@ -356,17 +376,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate_rows</span>(node_name, <span class="at">sep =</span> <span class="st">","</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(node_name, category) <span class="sc">%&gt;%</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">datasets =</span> <span class="fu">n</span>(), <span class="at">records =</span> <span class="fu">sum</span>(records), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">node_name =</span> <span class="fu">factor</span>(node_name, <span class="at">levels =</span> <span class="fu">rev</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(node_name)))))</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> node_license_stats) <span class="sc">+</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">y =</span> node_name, <span class="at">x =</span> records, <span class="at">fill =</span> category), <span class="at">stat =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#7ABD7E"</span>, <span class="st">"#FFB54C"</span>, <span class="st">"#FF6961"</span>)) <span class="sc">+</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="fu">label_comma</span>()</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"node"</span>) <span class="sc">+</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Number of records by node and license"</span>) <span class="sc">+</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  report_theme</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">node_name =</span> <span class="fu">factor</span>(node_name, <span class="at">levels =</span> <span class="fu">rev</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(node_name)))),</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">category =</span> <span class="fu">factor</span>(category, <span class="at">levels =</span> categories)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> node_license_stats) <span class="sc">+</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">y =</span> node_name, <span class="at">x =</span> records, <span class="at">fill =</span> category), <span class="at">stat =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#7ABD7E"</span>, <span class="st">"#FFB54C"</span>, <span class="st">"#FF6961"</span>)) <span class="sc">+</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="fu">label_comma</span>()</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"node"</span>) <span class="sc">+</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Number of records by node and license"</span>) <span class="sc">+</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  report_theme</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
