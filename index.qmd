@@ -18,6 +18,8 @@ format:
 
 This is an overview of data licenses applied to OBIS datasets. In particular, it shows the distribution of public domain ([CC0](https://creativecommons.org/public-domain/cc0/)) and open licenses ([CC BY](https://creativecommons.org/licenses/by/4.0/), [CC BY-SA](https://creativecommons.org/licenses/by-sa/4.0/)), versus more restrictive licenses (such as [CC BY-NC](https://creativecommons.org/licenses/by-nc/4.0/)) across datasets and records. Creative Commons licenses other than CC0, CC BY, and CC BY-SA, are considered non-free because they impose restrictions on commercial and derivative use. The former licenses however, are conformant with the Open Knowledge Foundation's [Open Definition](https://opendefinition.org/).
 
+Nature Scientific Data [recommends the use of CC0 or CC BY licenses](https://www.nature.com/sdata/policies/repositories). NCEI [encourages the use of CC0 or CC BY](https://www.ncei.noaa.gov/archive) for data produced by non-Federal entities.
+
 Besides Creative Commons licenses, OBIS datasets also use other licenses such as:
 
 - [Open Government Licence - Canada (OGL-C)](https://open.canada.ca/en/open-government-licence-canada)
