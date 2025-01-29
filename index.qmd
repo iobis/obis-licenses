@@ -16,7 +16,19 @@ format:
       gutter-width: 1.5rem
 ---
 
+This is an overview of data licenses applied to OBIS datasets. In particular, it shows the distribution of public domain ([CC0](https://creativecommons.org/public-domain/cc0/)) and open licenses ([CC BY](https://creativecommons.org/licenses/by/4.0/), [CC BY-SA](https://creativecommons.org/licenses/by-sa/4.0/)), versus more restrictive licenses (such as [CC BY-NC](https://creativecommons.org/licenses/by-nc/4.0/)) across datasets and records. Creative Commons licenses other than CC0, CC BY, and CC BY-SA, are considered non-free because they impose restrictions on commercial and derivative use. The former licenses however, are conformant with the Open Knowledge Foundation's [Open Definition](https://opendefinition.org/).
+
+Besides Creative Commons licenses, OBIS datasets also use other licenses such as:
+
+- [Open Government Licence - Canada (OGL-C)](https://open.canada.ca/en/open-government-licence-canada)
+- [Open Data Commons Attribution License (ODC-By)](https://opendatacommons.org/licenses/by/1-0/)
+- [ICES Data Policy](https://www.ices.dk/data/guidelines-and-policy/pages/ices-data-policy.aspx)
+
+For the purpose of this analysis these licenses will be considered open, but the ICES Data Policy requires closer investigation as it mentions some exceptions on the use of CC BY.
+
 # Dataset metadata
+
+Dataset metadata including licenses can be obtained from the OBIS API using the robis R package.
 
 ```{r message=FALSE}
 library(dplyr)
@@ -38,6 +50,8 @@ report_theme <- theme(
     panel.background = element_rect(fill = "#f5f5f5", colour = NA),
     legend.background = element_blank()
   )
+
+categories <- c("Public domain", "Open", "Non-free")
 ```
 
 ```{r message=FALSE}
@@ -71,9 +85,13 @@ datasets <- full_datasets %>%
   ) %>% mutate(
     intellectualrights = gsub("\\\n", " ", intellectualrights),    
     category = case_when(
-      license == "CC0" ~ "CC0",
-      license == "CC BY" ~ "CC BY",
-      TRUE ~ "Other"
+      license == "CC0" ~ "Public domain",
+      license == "CC BY" ~ "Open",
+      license == "CC BY-SA" ~ "Open",
+      license == "Open Data Commons Attribution" ~ "Open",
+      license == "Open Government Licence - Canada" ~ "Open",
+      license == "ICES Data Policy" ~ "Open",
+      TRUE ~ "Non-free"
     )
   )
 ```
@@ -101,7 +119,7 @@ license_stats <- licenses %>%
   arrange(-records) %>% 
   mutate(
     license = factor(license, levels = rev(reorder(license, records))),
-    category = factor(category, levels = c("CC0", "CC BY", "Other")),
+    category = factor(category, levels = categories),
     records_percentage = records / sum(records) * 100,
     datasets_percentage = datasets / sum(datasets) * 100
   )
@@ -148,7 +166,10 @@ node_license_stats <- datasets %>%
   separate_rows(node_name, sep = ",") %>% 
   group_by(node_name, category) %>%
   summarise(datasets = n(), records = sum(records), .groups = "drop") %>% 
-  mutate(node_name = factor(node_name, levels = rev(sort(unique(node_name)))))
+  mutate(
+    node_name = factor(node_name, levels = rev(sort(unique(node_name)))),
+    category = factor(category, levels = categories)
+  )
 
 ggplot(data = node_license_stats) +
   geom_bar(aes(y = node_name, x = records, fill = category), stat = "identity") +
